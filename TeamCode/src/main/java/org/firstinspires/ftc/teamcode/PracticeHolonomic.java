@@ -114,10 +114,10 @@ public class PracticeHolonomic extends LinearOpMode {
 
 
 
-        leftFront  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightFront = hardwareMap.get(DcMotor.class, "right_drive");
-        leftBack   = hardwareMap.get(DcMotor.class, "left_drive");
-        rightBack  = hardwareMap.get(DcMotor.class, "right_drive");
+        leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBack  = hardwareMap.get(DcMotor.class, "rightBack");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
