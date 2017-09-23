@@ -101,7 +101,6 @@ public class PracticeHolonomic extends LinearOpMode {
          */
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
         /**
          * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
          * in this data set: all three of the VuMarks in the game were created from this one template,
@@ -109,11 +108,12 @@ public class PracticeHolonomic extends LinearOpMode {
          * @see VuMarkInstanceId
          */
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
 
-
+        /*
         leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
@@ -125,12 +125,16 @@ public class PracticeHolonomic extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
-
+        */
         // Wait for the game to start (driver presses PLAY)
 
 
 
-
+        double LFPower;
+        double RFPower;
+        double LBPower;
+        double RBPower;
+        double max;
 
 
         telemetry.addData(">", "Press Play to start");
@@ -142,34 +146,43 @@ public class PracticeHolonomic extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Setup a variable for each drive wheel to save power level for telemetry
-            double LFPower;
-            double RFPower;
-            double LBPower;
-            double RBPower;
 
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
 
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = gamepad1.left_stick_y;
-            //double turn  =  gamepad1.right_stick_x;
-            LFPower    = Range.clip(drive, -1.0, 1.0) ;
-            RFPower    = Range.clip(drive, -1.0, 1.0) ;
-            LBPower    = Range.clip(drive, -1.0, 1.0) ;
-            RBPower    = Range.clip(drive, -1.0, 1.0) ;
 
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            // leftPower  = -gamepad1.left_stick_y ;
-            // rightPower = -gamepad1.right_stick_y ;
+            double drive =  Math.sqrt(   Math.pow(gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2)  ) ;
+            double angle =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            double turn  =  gamepad1.right_stick_x;
 
-            // Send calculated power to wheels
+            LFPower     =   drive * Math.sin(angle + Math.PI/4) + turn;
+            RFPower     =   drive * Math.cos(angle + Math.PI/4) - turn;
+            LBPower     =   drive * Math.cos(angle + Math.PI/4) + turn;
+            RBPower     =   drive * Math.sin(angle + Math.PI/4) - turn;
+
+            max = Math.abs(LFPower);
+            if (Math.abs(RFPower) > max) max = Math.abs(RFPower);
+            if (Math.abs(LBPower) > max) max = Math.abs(LBPower);
+            if (Math.abs(RBPower) > max) max = Math.abs(RBPower);
+
+
+            LFPower /= max;
+            RFPower /= max;
+            LBPower /= max;
+            RBPower /= max;
+
+
+
+            telemetry.addData("LF:", LFPower);
+            telemetry.addData("RF:", RFPower);
+            telemetry.addData("LB:", LBPower);
+            telemetry.addData("RB:", RBPower);
+
+
+            /*
             leftFront.setPower(LFPower);
             rightFront.setPower(RFPower);
             leftBack.setPower(LBPower);
             rightBack.setPower(RBPower);
-
+            */
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
