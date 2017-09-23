@@ -113,7 +113,7 @@ public class PracticeHolonomic extends LinearOpMode {
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
 
-        /*
+
         leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
@@ -125,7 +125,7 @@ public class PracticeHolonomic extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
-        */
+
         // Wait for the game to start (driver presses PLAY)
 
 
@@ -135,6 +135,10 @@ public class PracticeHolonomic extends LinearOpMode {
         double LBPower;
         double RBPower;
         double max;
+        double drive;
+        double angle;
+        double turn;
+        double coeff;
 
 
         telemetry.addData(">", "Press Play to start");
@@ -149,40 +153,50 @@ public class PracticeHolonomic extends LinearOpMode {
 
 
 
-            double drive =  Math.sqrt(   Math.pow(gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2)  ) ;
-            double angle =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
-            double turn  =  gamepad1.right_stick_x;
+            drive =  Math.sqrt(   Math.pow(gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2)  ) ;
+            angle =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            turn  =  -gamepad1.right_stick_x;
 
-            LFPower     =   drive * Math.sin(angle + Math.PI/4) + turn;
-            RFPower     =   drive * Math.cos(angle + Math.PI/4) - turn;
-            LBPower     =   drive * Math.cos(angle + Math.PI/4) + turn;
-            RBPower     =   drive * Math.sin(angle + Math.PI/4) - turn;
+            coeff = drive;
+            if(Math.abs(turn) > coeff) coeff = Math.abs(turn);
+            if(coeff > 1) coeff = 1;
+
+            LFPower     =   (drive * Math.sin(angle - Math.PI/4) + turn);
+            RFPower     =   (drive * Math.cos(angle - Math.PI/4) - turn);
+            LBPower     =   (drive * Math.cos(angle - Math.PI/4) + turn);
+            RBPower     =   (drive * Math.sin(angle - Math.PI/4) - turn);
+
+
 
             max = Math.abs(LFPower);
             if (Math.abs(RFPower) > max) max = Math.abs(RFPower);
             if (Math.abs(LBPower) > max) max = Math.abs(LBPower);
             if (Math.abs(RBPower) > max) max = Math.abs(RBPower);
+            LFPower /= (max);
+            RFPower /= (max);
+            LBPower /= (max);
+            RBPower /= (max);
+
+            LFPower *= coeff;
+            RFPower *= coeff;
+            LBPower *= coeff;
+            RBPower *= coeff;
 
 
-            LFPower /= max;
-            RFPower /= max;
-            LBPower /= max;
-            RBPower /= max;
 
-
-
+            telemetry.addData("coeff:", coeff);
             telemetry.addData("LF:", LFPower);
             telemetry.addData("RF:", RFPower);
             telemetry.addData("LB:", LBPower);
             telemetry.addData("RB:", RBPower);
 
 
-            /*
+
             leftFront.setPower(LFPower);
             rightFront.setPower(RFPower);
             leftBack.setPower(LBPower);
             rightBack.setPower(RBPower);
-            */
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
