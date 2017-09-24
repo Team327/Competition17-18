@@ -155,7 +155,7 @@ public class PracticeHolonomic extends LinearOpMode {
 
             drive =  Math.sqrt(   Math.pow(gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2)  ) ;
             angle =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
-            turn  =  -gamepad1.right_stick_x;
+            turn  =  -Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x;
 
             coeff = drive;
             if(Math.abs(turn) > coeff) coeff = Math.abs(turn);
