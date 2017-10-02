@@ -71,7 +71,7 @@ public class HolonomicRobot {
 
     public void hardwareInit(HardwareMap hm)
     {
-        this.telemetry = telemetry;
+
         //motors
         leftFront  = hm.get(DcMotor.class, "leftFront");
         rightFront = hm.get(DcMotor.class, "rightFront");
