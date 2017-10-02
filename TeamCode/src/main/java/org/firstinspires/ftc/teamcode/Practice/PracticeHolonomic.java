@@ -26,11 +26,14 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Practice;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -47,9 +50,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 
-@Autonomous(name="VuMark Id", group ="Concept")
+@TeleOp(name="Practice Holo", group ="Concept")
 
-public class VuMarkIdentification extends LinearOpMode {
+public class PracticeHolonomic extends LinearOpMode {
 
     public static final String TAG = "Vuforia VuMark Sample";
 
@@ -57,6 +60,13 @@ public class VuMarkIdentification extends LinearOpMode {
 
 
     VuforiaLocalizer vuforia;
+
+
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftFront = null;
+    private DcMotor rightFront = null;
+    private DcMotor leftBack = null;
+    private DcMotor rightBack = null;
 
     @Override public void runOpMode() {
 
@@ -91,7 +101,6 @@ public class VuMarkIdentification extends LinearOpMode {
          */
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
         /**
          * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
          * in this data set: all three of the VuMarks in the game were created from this one template,
@@ -99,16 +108,104 @@ public class VuMarkIdentification extends LinearOpMode {
          * @see VuMarkInstanceId
          */
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+
+
+
+        leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBack  = hardwareMap.get(DcMotor.class, "rightBack");
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
+
+        // Wait for the game to start (driver presses PLAY)
+
+
+
+        double LFPower;
+        double RFPower;
+        double LBPower;
+        double RBPower;
+        double max;
+        double drive;
+        double angle;
+        double turn;
+        double coeff;
+
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
         waitForStart();
 
+        runtime.reset();
         relicTrackables.activate();
 
         while (opModeIsActive()) {
+            // Setup a variable for each drive wheel to save power level for telemetry
+
+
+
+            drive =  Math.sqrt(   Math.pow(gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2)  ) ;
+            angle =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            turn  =  -Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x;
+
+            coeff = drive;
+            if(Math.abs(turn) > coeff) coeff = Math.abs(turn);
+            if(coeff > 1) coeff = 1;
+
+            LFPower     =   (drive * Math.sin(angle - Math.PI/4) + turn);
+            RFPower     =   (drive * Math.cos(angle - Math.PI/4) - turn);
+            LBPower     =   (drive * Math.cos(angle - Math.PI/4) + turn);
+            RBPower     =   (drive * Math.sin(angle - Math.PI/4) - turn);
+
+
+
+            max = Math.abs(LFPower);
+            if (Math.abs(RFPower) > max) max = Math.abs(RFPower);
+            if (Math.abs(LBPower) > max) max = Math.abs(LBPower);
+            if (Math.abs(RBPower) > max) max = Math.abs(RBPower);
+            LFPower /= (max);
+            RFPower /= (max);
+            LBPower /= (max);
+            RBPower /= (max);
+
+            LFPower *= coeff;
+            RFPower *= coeff;
+            LBPower *= coeff;
+            RBPower *= coeff;
+
+
+
+            telemetry.addData("coeff:", coeff);
+            telemetry.addData("LF:", LFPower);
+            telemetry.addData("RF:", RFPower);
+            telemetry.addData("LB:", LBPower);
+            telemetry.addData("RB:", RBPower);
+
+
+
+            leftFront.setPower(LFPower);
+            rightFront.setPower(RFPower);
+            leftBack.setPower(LBPower);
+            rightBack.setPower(RBPower);
+
+
+
+
+
+
+
+
+
+
 
             /**
              * See if any of the instances of {@link relicTemplate} are currently visible.
