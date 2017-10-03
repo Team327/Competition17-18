@@ -50,7 +50,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 
-@TeleOp(name="Practice Holo", group ="Concept")
+@TeleOp(name="Practice Holo2", group ="Concept")
 
 public class PracticeHolonomic extends LinearOpMode {
 

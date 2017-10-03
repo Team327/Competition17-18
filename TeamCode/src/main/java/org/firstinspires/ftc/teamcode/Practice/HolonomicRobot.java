@@ -212,7 +212,7 @@ public class HolonomicRobot {
 
     public void init()
     {
-        CurrAngle = 270;
+        CurrAngle = Math.PI ;
 
 
     }
@@ -222,6 +222,8 @@ public class HolonomicRobot {
     public void updateSensors()
     {
         telemetry.update();
+
+        CurrAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
     }
 
 
