@@ -79,7 +79,7 @@ public class HolonomicRobot {
         rightBack  = hm.get(DcMotor.class, "rightBack");
 
 
-        //A WHOLE BUNCH of initialization stuff so out motors work fine
+        //A WHOLE BUNCH of initialization stuff so our motors work fine
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
@@ -150,7 +150,7 @@ public class HolonomicRobot {
     {
 
 
-        CurrAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+        CurrAngle = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
     }
 
 
@@ -158,7 +158,14 @@ public class HolonomicRobot {
     {
         return CurrAngle;
     }
+    public void setAngleDeg(double degrees){
+        CurrAngle = degrees*Math.PI/180;
 
+    }
+    public void setAngleRad(double radians)
+    {
+        CurrAngle = radians;
+    }
 
     //DRIVETRAIN -------------------------------------------------------
 
