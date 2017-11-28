@@ -139,7 +139,7 @@ public class HolonomicRobot {
 
     public void init()
     {
-        CurrAngle = Math.PI ;
+        CurrAngle = 0 ;
 
 
     }
@@ -248,7 +248,9 @@ public class HolonomicRobot {
         rightBack.setPower(RBPower);
 
     }
+    public void intakes(double rightMove, double leftMove, boolean turnRight, boolean turnLeft) {
 
+    }
     /* uncomment if you want to try out desAngle stuff
     private double pid(double state, double desState, double kp, double kd, double ki)
     {

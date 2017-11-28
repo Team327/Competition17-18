@@ -45,7 +45,7 @@ import com.qualcomm.robotcore.util.Range;
 public class HoloDriveFO extends OpMode
 {
     private HolonomicRobot      robot;
-    private AdjustableIntake    intake;
+   // private AdjustableIntake    intake;
 
 
     /*
@@ -57,7 +57,7 @@ public class HoloDriveFO extends OpMode
 
         //make the robot
         robot = new HolonomicRobot(hardwareMap, telemetry);
-        intake = new AdjustableIntake(hardwareMap, telemetry);
+        //intake = new AdjustableIntake(hardwareMap, telemetry);
 
 
 
@@ -108,8 +108,6 @@ public class HoloDriveFO extends OpMode
         robot.updateSensors();
 
         robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-
-        if(gamepad1.dpad_down){ robot.setAngleDeg(0); }
 
 
 
