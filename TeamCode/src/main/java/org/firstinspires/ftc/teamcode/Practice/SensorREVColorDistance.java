@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.Practice;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -53,7 +53,7 @@ import java.util.Locale;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
 @Autonomous(name = "Sensor: REVColorDistance", group = "Sensor")
-@Disabled  // Comment this out to add to the opmode list
+//@Disabled  // Comment this out to add to the opmode list
 public class SensorREVColorDistance extends LinearOpMode {
 
     /**
