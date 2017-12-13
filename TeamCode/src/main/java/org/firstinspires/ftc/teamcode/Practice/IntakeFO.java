@@ -40,13 +40,18 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="HoloDriveFO", group="Iterative Opmode")
+@TeleOp(name="IntakeFO", group="Iterative Opmode")
 
-public class HoloDriveFO extends OpMode
+public class IntakeFO extends OpMode
 {
     private HolonomicRobot      robot;
-   // private AdjustableIntake    intake;
+    private AdjustableIntake    intake;
 
+
+
+
+
+    private boolean IntakeOpen;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -57,12 +62,16 @@ public class HoloDriveFO extends OpMode
 
         //make the robot
         robot = new HolonomicRobot(hardwareMap, telemetry);
-        //intake = new AdjustableIntake(hardwareMap, telemetry);
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.75, 1, 1.0, 0.25, 0);
 
 
 
 
         telemetry.addData("Status", "Initialized");
+
+
+        IntakeOpen = true;
+        intake.fullOpen();
     }
 
 
@@ -74,7 +83,6 @@ public class HoloDriveFO extends OpMode
     @Override
     public void init_loop() {
         telemetry.addData("Status:", "Maybe we could put an auto here, just call the loop here.");
-
 
 
 
@@ -97,6 +105,7 @@ public class HoloDriveFO extends OpMode
 
 
 
+    private boolean prev1a;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
@@ -112,6 +121,33 @@ public class HoloDriveFO extends OpMode
         robot.updateSensors();
 
         robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+
+
+
+
+        if(gamepad1.a && !prev1a) {
+            if (IntakeOpen)
+            {
+                intake.storeArms();
+                IntakeOpen = false;
+            }
+            else
+            {
+                intake.fullOpen();
+                IntakeOpen = true;
+            }
+        }
+        prev1a = gamepad1.a;
+
+        if(IntakeOpen) {
+            if (gamepad1.left_bumper) {
+                intake.aimLeft();
+            } else if (gamepad1.right_bumper) {
+                intake.aimRight();
+            } else {
+                intake.fullClose();
+            }
+        }
 
 
 

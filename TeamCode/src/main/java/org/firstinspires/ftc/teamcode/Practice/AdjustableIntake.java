@@ -28,6 +28,25 @@ public class AdjustableIntake {
     private CRServo     rightIntake;
 
 
+
+
+    //Servo positions, set in the constructor
+    private double leftStow;
+    private double leftIn;
+    private double leftOut;
+    private double rightStow;
+    private double rightIn;
+    private double rightOut;
+
+
+
+
+
+    private double rightPos;
+    private double leftPos;
+
+
+
     /**creates the adjustable intake for use
      *
      *
@@ -35,7 +54,7 @@ public class AdjustableIntake {
      * @param hm    hardware map of the robot
      * @param tel   telemtry module
      */
-    public AdjustableIntake(HardwareMap hm, Telemetry tel)
+    public AdjustableIntake(HardwareMap hm, Telemetry tel, double lStow, double lIn, double lOut, double rStow, double rIn, double rOut)
     {
         hardware    =   hm;
         telemetry   =   tel;
@@ -48,6 +67,21 @@ public class AdjustableIntake {
         //reverse these guys so that they can act the same as the left ones
         rightArm.setDirection(Servo.Direction.REVERSE);
         rightIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftStow = lStow;
+        leftIn = lIn;
+        leftOut = lOut;
+
+        rightStow = rStow;
+        rightIn = rIn;
+        rightOut = rOut;
+
+
+        rightPos = rightStow;
+        leftPos  = leftStow;
+
+
+
     }
 
     //-----BASIC MOVEMENT-------
@@ -75,59 +109,97 @@ public class AdjustableIntake {
         rightArm.scaleRange(rightMin, rightMax);
     }
 
+
+
+    //---------ADJUSTMENT-----------
+    public void shiftLeft()
+    {
+        leftPos -= 0.01;
+        rightPos += 0.01;
+
+        if(rightPos > rightOut) rightPos = rightOut;
+        if(leftPos < leftIn) leftPos = leftIn;
+
+
+        this.setLeftArm(leftPos);
+        this.setRightArm(rightPos);
+    }
+
+
+    public void shiftRight()
+    {
+        leftPos += 0.01;
+        rightPos -= 0.01;
+
+        if(rightPos < rightIn) rightPos = rightIn;
+        if(leftPos > leftOut) leftPos = leftOut;
+
+
+        this.setLeftArm(leftPos);
+        this.setRightArm(rightPos);
+    }
+
+
+
     //---------COMPLEX MOVEMENT---------
     public void aimLeft()
     {
-        this.setLeftArm(1.0);
-        this.setRightArm(.75);
+        this.setLeftArm(leftOut);
+        this.setRightArm(rightIn);
     }
 
     public void aimRight()
     {
-        this.setLeftArm(.75);
-        this.setRightArm(1.0);
+        this.setLeftArm(leftIn);
+        this.setRightArm(rightOut);
     }
 
     public void fullOpen()
     {
-        this.setLeftArm(1.0);
-        this.setRightArm(1.0);
+        this.setLeftArm(leftOut);
+        this.setRightArm(rightOut);
     }
 
     public void fullClose()
     {
-        this.setLeftArm(.75);
-        this.setRightArm(.75);
+        this.setLeftArm(leftIn);
+        this.setRightArm(rightIn);
     }
 
     public void storeArms()
     {
-        this.setLeftArm(0);
-        this.setRightArm(0);
+        this.setLeftArm(leftStow);
+        this.setRightArm(rightStow);
     }
 
     public void intake()
     {
-        this.setLeftIntake(1);
-        this.setRightIntake(1);
+        this.setLeftIntake(-1);
+        this.setRightIntake(-1);
     }
 
     public void outtake()
     {
-        this.setLeftIntake(-1);
-        this.setRightIntake(-1);
+        this.setLeftIntake(1);
+        this.setRightIntake(1);
     }
 
     public void rotateRight()
+    {
+        this.setLeftIntake(1);
+        this.setRightIntake(-1);
+    }
+
+    public void rotateLeft()
     {
         this.setLeftIntake(-1);
         this.setRightIntake(1);
     }
 
-    public void rotateLeft()
+    public void stopIntake()
     {
-        this.setLeftIntake(1);
-        this.setRightIntake(-1);
+        this.setLeftIntake(0);
+        this.setRightIntake(0);
     }
 
 

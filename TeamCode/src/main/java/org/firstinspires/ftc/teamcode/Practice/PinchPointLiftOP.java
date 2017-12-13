@@ -40,12 +40,16 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="HoloDriveFO", group="Iterative Opmode")
+@TeleOp(name="PinchPointLiftOP", group="Iterative Opmode")
 
-public class HoloDriveFO extends OpMode
+public class PinchPointLiftOP extends OpMode
 {
-    private HolonomicRobot      robot;
-   // private AdjustableIntake    intake;
+    private PinchPointRobot      robot;
+    private AdjustableIntake    intake;
+
+
+
+    private boolean IntakeOpen;
 
 
     /*
@@ -56,11 +60,12 @@ public class HoloDriveFO extends OpMode
         telemetry.addData("Status", "Initializing");
 
         //make the robot
-        robot = new HolonomicRobot(hardwareMap, telemetry);
-        //intake = new AdjustableIntake(hardwareMap, telemetry);
+        robot = new PinchPointRobot(hardwareMap, telemetry);
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.8, 1, 0.2, 0.8, 1);
 
 
-
+        IntakeOpen = true;
+        intake.fullOpen();
 
         telemetry.addData("Status", "Initialized");
     }
@@ -74,7 +79,6 @@ public class HoloDriveFO extends OpMode
     @Override
     public void init_loop() {
         telemetry.addData("Status:", "Maybe we could put an auto here, just call the loop here.");
-
 
 
 
@@ -96,7 +100,8 @@ public class HoloDriveFO extends OpMode
 
 
 
-
+    private boolean prev1a;
+    private int     intakeState;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
@@ -111,7 +116,74 @@ public class HoloDriveFO extends OpMode
 
         robot.updateSensors();
 
-        robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        //robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+
+        robot.lift(gamepad2.right_trigger-gamepad1.left_trigger);
+
+
+        if(gamepad1.a && !prev1a) {
+            if (IntakeOpen)
+            {
+                intake.storeArms();
+                intakeState = 0;
+                IntakeOpen = false;
+            }
+            else
+            {
+                intake.fullOpen();
+                IntakeOpen = true;
+            }
+        }
+        prev1a = gamepad1.a;
+
+        if(IntakeOpen) {
+            if (gamepad1.left_bumper) {
+                intake.shiftLeft();
+            } else if (gamepad1.right_bumper) {
+                intake.shiftRight();
+            }
+        }
+
+
+
+        if(gamepad1.b)
+            intakeState = 3;
+        else if(gamepad1.x)
+            intakeState = 2;
+        else if(gamepad1.y)
+            intakeState = 1;
+
+
+
+        switch(intakeState)
+        {
+            case 0:
+                intake.stopIntake();
+                break;
+
+            case 1:
+                intake.intake();
+                break;
+
+            case 2:
+                intake.rotateLeft();
+                break;
+
+            case 3:
+                intake.rotateRight();
+                break;
+
+            case 4:     ///TODO find a way to activate this
+                intake.outtake();
+                break;
+
+
+            default:
+                intake.stopIntake();
+                break;
+        }
+
+
 
 
 
