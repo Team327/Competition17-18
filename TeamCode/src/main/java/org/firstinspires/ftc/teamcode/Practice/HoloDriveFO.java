@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 @TeleOp(name="HoloDriveFO", group="Iterative Opmode")
-
+@Disabled
 public class HoloDriveFO extends OpMode
 {
     private HolonomicRobot      robot;

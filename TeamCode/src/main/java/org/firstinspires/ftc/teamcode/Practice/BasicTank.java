@@ -51,6 +51,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="BasicTank2", group="Iterative Opmode")
+@Disabled
 public class BasicTank extends OpMode
 {
     // Declare OpMode members.

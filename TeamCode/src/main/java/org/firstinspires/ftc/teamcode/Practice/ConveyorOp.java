@@ -61,7 +61,7 @@ public class ConveyorOp extends OpMode
 
         //make the robot
         robot = new ConveyorBot(hardwareMap, telemetry);
-        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.6, 0.8, 0.2, 0.8, 1);
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.3, 0.8, 0.2, 0.5, 1);
 
 
         IntakeOpen = true;
@@ -100,7 +100,7 @@ public class ConveyorOp extends OpMode
 
 
 
-    private boolean prev1a;
+    private boolean prev2a;
     private int     intakeState;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -116,12 +116,12 @@ public class ConveyorOp extends OpMode
 
         robot.updateSensors();
 
-        //robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        robot.convey(gamepad2.right_trigger-gamepad2.left_trigger);
+        robot.convey(gamepad2.left_stick_y);
 
 
-        if(gamepad1.a && !prev1a) {
+        if(gamepad2.a && !prev2a) {
             if (IntakeOpen)
             {
                 intake.storeArms();
@@ -134,21 +134,21 @@ public class ConveyorOp extends OpMode
                 IntakeOpen = true;
             }
         }
-        prev1a = gamepad1.a;
+        prev2a = gamepad2.a;
 
         if(IntakeOpen) {
-            intake.shiftLeft(gamepad1.left_trigger);
-            intake.shiftRight(gamepad1.right_trigger);
+            intake.shiftLeft(gamepad2.left_trigger);
+            intake.shiftRight(gamepad2.right_trigger);
 
         }
 
 
 
-        if(gamepad1.b)
+        if(gamepad2.b)
             intakeState = 3;
-        else if(gamepad1.x)
+        else if(gamepad2.x)
             intakeState = 2;
-        else if(gamepad1.y)
+        else if(gamepad2.y)
             intakeState = 1;
 
 
