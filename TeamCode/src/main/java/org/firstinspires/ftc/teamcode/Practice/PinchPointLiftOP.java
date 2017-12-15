@@ -61,7 +61,7 @@ public class PinchPointLiftOP extends OpMode
 
         //make the robot
         robot = new PinchPointRobot(hardwareMap, telemetry);
-        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.6, 0.8, 0.2, 0.8, 1);
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.3, 0.8, 0.2, 0.5, 1);
 
 
         IntakeOpen = true;

@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 @TeleOp(name="IntakeFO", group="Iterative Opmode")
-
+@Disabled
 public class IntakeFO extends OpMode
 {
     private HolonomicRobot      robot;
