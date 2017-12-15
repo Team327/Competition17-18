@@ -45,11 +45,13 @@ public class HolonomicRobot {
 
 
     VuforiaLocalizer vuforia;
+    int cameraMonitorViewId;
 
     protected DcMotor leftFront, rightFront, leftBack, rightBack;
 
 
     double CurrAngle;
+    double CurrAngleOffset;
 
 
     //protected Servo
@@ -126,6 +128,10 @@ public class HolonomicRobot {
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
 
+
+        cameraMonitorViewId = hm.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hm.appContext.getPackageName());
+
+
     }
 
 
@@ -137,9 +143,25 @@ public class HolonomicRobot {
 
 
 
+    VuforiaTrackable relicTemplate;
+
     public void init()
     {
+
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = "Ae/sMsj/////AAAAGeOrJwP8WE9Zj9QPRamQ5yeKrIOrreOb5Ll4kjTkp+iZvq2Qxeku5BJWo7vmmij58qQj4xywefvTAErrY0NnU1QtAvknH55vMIM9BMi3CJ3jQGza2778CKEdZ5Cr7DcGxQQmp0vcO0ndTYfZ8aRwUdnSt88YTn1NjMspDHrwL7ba/7kEG56UQVBNwuQJ9uDf+tE2u1C0peppbLEuj/Fv1cSAaCn4TvE2kaPp/qun3Rzr9K6FPul9WkxA+DG+lPWqgyDS/GtB3UJctkP2L2py0yccc3gFBLsHpNgX9oY3eLxZpvIxCqWHLpgr6NKZUDx/vFWPIUZPYFCBwuy4Hfj9oxL66sOEhyrtWFyxVfuko63v";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+
+        relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate");
+        relicTrackables.activate();
+
+
+
         CurrAngle = 0 ;
+        CurrAngleOffset = 0;
 
 
     }
@@ -148,10 +170,52 @@ public class HolonomicRobot {
 
     public void updateSensors()
     {
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
+                /* Found an instance of the template. In the actual game, you will probably
+                 * loop until this condition occurs, then move on to act accordingly depending
+                 * on which VuMark was visible. */
+            telemetry.addData("VuMark", "%s visible", vuMark);
 
-        CurrAngle = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+                /* For fun, we also exhibit the navigational pose. In the Relic Recovery game,
+                 * it is perhaps unlikely that you will actually need to act on this pose information, but
+                 * we illustrate it nevertheless, for completeness. */
+            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
+            telemetry.addData("Pose", format(pose));
+
+                /* We further illustrate how to decompose the pose into useful rotational and
+                 * translational components */
+            if (pose != null) {
+                VectorF trans = pose.getTranslation();
+                Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+
+                // Extract the X, Y, and Z components of the offset of the target relative to the robot
+                double tX = trans.get(0);
+                double tY = trans.get(1);
+                double tZ = trans.get(2);
+
+                // Extract the rotational components of the target relative to the robot
+                double rX = rot.firstAngle;
+                double rY = rot.secondAngle;
+                double rZ = rot.thirdAngle;
+            }
+        }
+        else {
+            telemetry.addData("VuMark", "not visible");
+        }
+
+        telemetry.update();
+
+        CurrAngle = CurrAngleOffset-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
     }
+    String format(OpenGLMatrix transformationMatrix) {
+        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    }
+
+
+
+
 
 
     public double getAngle()
@@ -159,12 +223,12 @@ public class HolonomicRobot {
         return CurrAngle;
     }
     public void setAngleDeg(double degrees){
-        CurrAngle = degrees*Math.PI/180;
+        CurrAngleOffset = degrees*Math.PI/180;
 
     }
     public void setAngleRad(double radians)
     {
-        CurrAngle = radians;
+        CurrAngleOffset = radians;
     }
 
     //DRIVETRAIN -------------------------------------------------------

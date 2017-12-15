@@ -112,31 +112,21 @@ public class AdjustableIntake {
 
 
     //---------ADJUSTMENT-----------
-    public void shiftLeft()
+    public void shiftLeft(double pos)
     {
-        leftPos -= 0.01;
-        rightPos += 0.01;
+        pos *= (leftOut - leftIn);
+        pos = leftOut - pos;
 
-        if(rightPos > rightOut) rightPos = rightOut;
-        if(leftPos < leftIn) leftPos = leftIn;
-
-
-        this.setLeftArm(leftPos);
-        this.setRightArm(rightPos);
+        this.setLeftArm(pos);
     }
 
 
-    public void shiftRight()
+    public void shiftRight(double pos)
     {
-        leftPos += 0.01;
-        rightPos -= 0.01;
+        pos *= (rightOut - rightIn);
+        pos = rightOut - pos;
 
-        if(rightPos < rightIn) rightPos = rightIn;
-        if(leftPos > leftOut) leftPos = leftOut;
-
-
-        this.setLeftArm(leftPos);
-        this.setRightArm(rightPos);
+        this.setRightArm(pos);
     }
 
 
