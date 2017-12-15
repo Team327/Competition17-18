@@ -118,7 +118,7 @@ public class PinchPointLiftOP extends OpMode
 
         //robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        robot.lift(gamepad2.right_trigger-gamepad1.left_trigger);
+        robot.lift((gamepad2.right_trigger-gamepad1.left_trigger)/5.);
 
 
         if(gamepad1.a && !prev1a) {
