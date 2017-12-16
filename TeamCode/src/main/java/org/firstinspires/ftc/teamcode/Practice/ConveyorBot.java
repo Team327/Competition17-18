@@ -47,7 +47,7 @@ public class ConveyorBot extends HolonomicRobot{
 
     protected DcMotor leftLift, rightLift, flipper;
 
-    final double flipperMaxPos = 225;
+    final double flipperMaxPos = 275;
 
 
     public ConveyorBot(HardwareMap map, Telemetry tel)

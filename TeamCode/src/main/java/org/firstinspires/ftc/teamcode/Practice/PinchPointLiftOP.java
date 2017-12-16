@@ -61,7 +61,7 @@ public class PinchPointLiftOP extends OpMode
 
         //make the robot
         robot = new PinchPointRobot(hardwareMap, telemetry);
-        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.3, 0.8, 0.2, 0.5, 1);
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0.1, 0.3, 0.8, 0.3, 0.5, 1);
 
 
         IntakeOpen = true;
@@ -69,6 +69,8 @@ public class PinchPointLiftOP extends OpMode
         intake.fullOpen();
 
         telemetry.addData("Status", "Initialized");
+
+
     }
 
 
@@ -110,10 +112,25 @@ public class PinchPointLiftOP extends OpMode
     @Override
     public void loop() {
 
-
-
+        /*currently used buttons gamepad 1:
+         * left_stick
+         * right_stcik
+         * */
+        /*currently used buttons gamepad 2:
+        * a
+        * right_trigger
+        * left_bumper
+        * b
+        * left_stick
+        * right_stick
+        * x
+        * y
+        * */
 
         telemetry.addData("Status", "Driving, I hope");
+
+        telemetry.addData("leftGrip", robot.leftGrip.getPosition());
+        telemetry.addData("rightGrip", robot.rightGrip.getPosition());
 
         robot.updateSensors();
 
@@ -127,7 +144,7 @@ public class PinchPointLiftOP extends OpMode
                 intake.storeArms();
                 intakeState = 0;
                 IntakeOpen = false;
-                robot.liftGrip();
+//                robot.liftGrip();
             }
             else
             {
@@ -140,19 +157,27 @@ public class PinchPointLiftOP extends OpMode
         if(IntakeOpen) {
             intake.shiftLeft(gamepad2.right_trigger);
             intake.shiftRight(gamepad2.right_trigger);
-
         }
 
+        if(gamepad2.dpad_up){
+            robot.gripUp();
+        }
+        if(gamepad2.dpad_down){
+            robot.gripDown();
+        }
 
         if(gamepad2.left_bumper && !prev2lb && IntakeOpen) {
 
             if(Grip)
             {
                 robot.ungrip();
+                Grip = !Grip;
             }
             else if(!Grip)
             {
                 robot.grip();
+                Grip = !Grip;
+
             }
         }
         prev2lb = gamepad2.left_bumper;
