@@ -45,7 +45,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class ConveyorBot extends HolonomicRobot{
 
-    protected DcMotor leftLift, rightLift;
+    protected DcMotor leftLift, rightLift, flipper;
+
+    final double flipperMaxPos = 225;
 
 
     public ConveyorBot(HardwareMap map, Telemetry tel)
@@ -54,13 +56,21 @@ public class ConveyorBot extends HolonomicRobot{
         super(map, tel);
         leftLift = map.get(DcMotor.class, "leftLift");
         rightLift = map.get(DcMotor.class, "rightLift");
+        flipper   = map.get(DcMotor.class, "flipper");
+
 
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
         rightLift.setDirection(DcMotor.Direction.REVERSE);
+        flipper.setDirection(DcMotor.Direction.FORWARD);
+
+
+        flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flipper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flipper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
@@ -69,6 +79,35 @@ public class ConveyorBot extends HolonomicRobot{
     {
         leftLift.setPower(power);
         rightLift.setPower(power);
+    }
+
+
+    public void flip()
+    {
+        if(flipper.getCurrentPosition() > -flipperMaxPos)
+        {
+            flipper.setPower(-0.8);
+        }
+        else
+        {
+            flipper.setPower(0);
+        }
+
+    }
+    public void unflip()
+    {
+        if(flipper.getCurrentPosition() < 0)
+        {
+            flipper.setPower(0.8);
+        }
+        else
+        {
+            flipper.setPower(0);
+        }
+    }
+    public void stopFlip()
+    {
+        flipper.setPower(0);
     }
 
 
