@@ -47,6 +47,9 @@ public class PinchPointRobot extends HolonomicRobot {
 
     protected Servo leftGrip, rightGrip;
 
+
+    private double leftMax = 500, rightMax = 500;
+
     public PinchPointRobot(HardwareMap map, Telemetry tel)
     {
         super (map, tel);
@@ -55,14 +58,25 @@ public class PinchPointRobot extends HolonomicRobot {
         leftLift = map.get(DcMotor.class, "leftLift");
         rightLift = map.get(DcMotor.class, "rightLift");
 
-        leftGrip = map.get(Servo.class, "leftLeft");
-        rightGrip = map.get(Servo.class, "rightGrip");
+        leftGrip = map.get(Servo.class, "LeftLift");
+        rightGrip = map.get(Servo.class, "RightLift");
 
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
         rightLift.setDirection(DcMotor.Direction.REVERSE);
         leftGrip.setDirection(Servo.Direction.FORWARD);
         rightGrip.setDirection(Servo.Direction.REVERSE);
+
+
+        leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+
+
+        leftLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
 
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -79,24 +93,42 @@ public class PinchPointRobot extends HolonomicRobot {
 
     //LIFT FUNCTIONS-------------------------------
 
-    public void lift(double power){
-        leftLift.setPower(power);
+    public void lift(double power) {
+
+        if (leftLift.getCurrentPosition() > leftMax && power > 0)
+            power = 0;
+        else if (leftLift.getCurrentPosition() < 0 && power < 0)
+            power = 0;
         rightLift.setPower(power);
+        leftLift.setPower(power);
     }
+
 
     public void grip()
     {
-        //TODO make this one
+        rightGrip.setPosition(0.72);
+        leftGrip.setPosition(0.44);
     }
 
     public void ungrip()
     {
-        //TODO make this one
+        rightGrip.setPosition(0.3);
+        leftGrip.setPosition(0.16);
 
+    }
+
+    public void gripUp(){
+        rightGrip.setPosition(rightGrip.getPosition()+.02);
+        leftGrip.setPosition(leftGrip.getPosition()+0.02);
+    }
+    public void gripDown(){
+        rightGrip.setPosition(rightGrip.getPosition()-0.02);
+        leftGrip.setPosition(leftGrip.getPosition()-0.02);
     }
     public void liftGrip()
     {
-        //TODO make this one
+        rightGrip.setPosition(1);
+        leftGrip.setPosition(0.74);
 
     }
 

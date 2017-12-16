@@ -118,7 +118,7 @@ public class AdjustableIntake {
         pos = leftOut - pos;
 
         this.setLeftArm(pos);
-        this.servoPosTel();
+//        this.servoPosTel();
     }
 
 
@@ -128,7 +128,7 @@ public class AdjustableIntake {
         pos = rightOut - pos;
 
         this.setRightArm(pos);
-        this.servoPosTel();
+//        this.servoPosTel();
     }
 
 

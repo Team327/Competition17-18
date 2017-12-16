@@ -134,11 +134,7 @@ public class HolonomicRobot {
         Vparameters.vuforiaLicenseKey = "Ae/sMsj/////AAAAGeOrJwP8WE9Zj9QPRamQ5yeKrIOrreOb5Ll4kjTkp+iZvq2Qxeku5BJWo7vmmij58qQj4xywefvTAErrY0NnU1QtAvknH55vMIM9BMi3CJ3jQGza2778CKEdZ5Cr7DcGxQQmp0vcO0ndTYfZ8aRwUdnSt88YTn1NjMspDHrwL7ba/7kEG56UQVBNwuQJ9uDf+tE2u1C0peppbLEuj/Fv1cSAaCn4TvE2kaPp/qun3Rzr9K6FPul9WkxA+DG+lPWqgyDS/GtB3UJctkP2L2py0yccc3gFBLsHpNgX9oY3eLxZpvIxCqWHLpgr6NKZUDx/vFWPIUZPYFCBwuy4Hfj9oxL66sOEhyrtWFyxVfuko63v";
         Vparameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(Vparameters);
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
 
-        relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate");
-        relicTrackables.activate();
 
     }
 
@@ -151,11 +147,15 @@ public class HolonomicRobot {
 
 
 
-    VuforiaTrackable relicTemplate;
+    private VuforiaTrackable relicTemplate;
 
     public void init()
     {
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
 
+        relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate");
+        relicTrackables.activate();
 
 
 
@@ -209,7 +209,7 @@ public class HolonomicRobot {
 
         CurrAngle = CurrAngleOffset-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
     }
-    String format(OpenGLMatrix transformationMatrix) {
+    public String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
@@ -297,12 +297,7 @@ public class HolonomicRobot {
         RBPower *= coeff;
 
 
-        //debug telemetry
-        telemetry.addData("coeff:", coeff   );
-        telemetry.addData("LF:",    LFPower );
-        telemetry.addData("RF:",    RFPower );
-        telemetry.addData("LB:",    LBPower );
-        telemetry.addData("RB:",    RBPower );
+
 
 
         //actually sets the power to the motors
