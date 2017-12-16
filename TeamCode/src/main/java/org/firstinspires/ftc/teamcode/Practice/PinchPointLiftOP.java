@@ -49,7 +49,7 @@ public class PinchPointLiftOP extends OpMode
 
 
 
-    private boolean IntakeOpen;
+    private boolean IntakeOpen, Grip;
 
 
     /*
@@ -65,6 +65,7 @@ public class PinchPointLiftOP extends OpMode
 
 
         IntakeOpen = true;
+        Grip = true;
         intake.fullOpen();
 
         telemetry.addData("Status", "Initialized");
@@ -100,7 +101,8 @@ public class PinchPointLiftOP extends OpMode
 
 
 
-    private boolean prev1a;
+    private boolean prev2a,         prev2lb;
+
     private int     intakeState;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -111,23 +113,21 @@ public class PinchPointLiftOP extends OpMode
 
 
 
-
         telemetry.addData("Status", "Driving, I hope");
 
         robot.updateSensors();
 
-        //robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
+        robot.lift(gamepad2.left_stick_y);
 
-        robot.lift(gamepad2.right_trigger-gamepad2.left_trigger);
-
-
-        if(gamepad1.a && !prev1a) {
+        if(gamepad2.a && !prev2a) {
             if (IntakeOpen)
             {
                 intake.storeArms();
                 intakeState = 0;
                 IntakeOpen = false;
+                robot.liftGrip();
             }
             else
             {
@@ -135,24 +135,35 @@ public class PinchPointLiftOP extends OpMode
                 IntakeOpen = true;
             }
         }
-        prev1a = gamepad1.a;
+        prev2a = gamepad2.a;
 
         if(IntakeOpen) {
-            intake.shiftLeft(gamepad1.left_trigger);
-            intake.shiftRight(gamepad1.right_trigger);
+            intake.shiftLeft(gamepad2.right_trigger);
+            intake.shiftRight(gamepad2.right_trigger);
 
         }
 
 
+        if(gamepad2.left_bumper && !prev2lb && IntakeOpen) {
 
-        if(gamepad1.b)
+            if(Grip)
+            {
+                robot.ungrip();
+            }
+            else if(!Grip)
+            {
+                robot.grip();
+            }
+        }
+        prev2lb = gamepad2.left_bumper;
+
+
+        if(gamepad2.b)
             intakeState = 3;
-        else if(gamepad1.x)
+        else if(gamepad2.x)
             intakeState = 2;
-        else if(gamepad1.y)
+        else if(gamepad2.y)
             intakeState = 1;
-
-
 
         switch(intakeState)
         {

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Practice;
 
 
 import android.view.OrientationEventListener;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -40,247 +41,35 @@ import java.util.Locale;
  * Created by James on 10/2/2017.
  */
 
-public class PinchPointRobot {
-    Telemetry telemetry;
-    OpenGLMatrix lastLocation = null;
+public class PinchPointRobot extends HolonomicRobot {
 
-
-    VuforiaLocalizer vuforia;
-
-    protected DcMotor leftFront, rightFront, leftBack, rightBack;
     protected DcMotor leftLift, rightLift;
 
-
-
-    double CurrAngle;
-
-
-    //protected Servo
-
-    //protected SensorThings
-    protected BNO055IMU imu;
-    protected Orientation angles;
-    protected Acceleration gravity;
-
+    protected Servo leftGrip, rightGrip;
 
     public PinchPointRobot(HardwareMap map, Telemetry tel)
     {
-        telemetry = tel;
-        hardwareInit(map);
-        init();
-
-    }
+        super (map, tel);
 
 
-    public void hardwareInit(HardwareMap hm)
-    {
+        leftLift = map.get(DcMotor.class, "leftLift");
+        rightLift = map.get(DcMotor.class, "rightLift");
 
-        //motors
-        leftFront  = hm.get(DcMotor.class, "leftFront");
-        rightFront = hm.get(DcMotor.class, "rightFront");
-        leftBack   = hm.get(DcMotor.class, "leftBack");
-        rightBack  = hm.get(DcMotor.class, "rightBack");
+        leftGrip = map.get(Servo.class, "leftLeft");
+        rightGrip = map.get(Servo.class, "rightGrip");
 
-
-        leftLift   = hm.get(DcMotor.class, "leftLift");
-        rightLift  = hm.get(DcMotor.class, "rightLift");
-
-
-
-        //A WHOLE BUNCH of initialization stuff so our motors work fine
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
         rightLift.setDirection(DcMotor.Direction.REVERSE);
+        leftGrip.setDirection(Servo.Direction.FORWARD);
+        rightGrip.setDirection(Servo.Direction.REVERSE);
 
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        leftLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //servos
-
-        //sensors
-
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.RADIANS;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu = hm.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-
-        // Set up our telemetry dashboard
-
-
-
-        // Start the logging of measured acceleration
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
-
-
     }
 
-
-
-
-
-
-
-
-
-
-    public void init()
-    {
-        CurrAngle = 0 ;
-
-
-    }
-
-    //SENSORS ----------------------------------------------------------
-
-    public void updateSensors()
-    {
-
-
-        CurrAngle = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
-    }
-
-
-    public double getAngle()
-    {
-        return CurrAngle;
-    }
-    public void setAngleDeg(double degrees){
-        CurrAngle = degrees*Math.PI/180;
-
-    }
-    public void setAngleRad(double radians)
-    {
-        CurrAngle = radians;
-    }
-
-    //DRIVETRAIN -------------------------------------------------------
-
-    private double LFPower;
-    private double RFPower;
-    private double LBPower;
-    private double RBPower;
-    private double max;
-    private double drive;
-    private double angle;
-    private double turn;
-    private double coeff;
-
-
-    /** Intakes stick_x, stick_y and right stick_x to move the robot according to the holonomic equation
-     *
-     * @param xMove: left_stick_x value, or the amount to move left/right
-     * @param yMove: left_stick_y value, or the amount to move up/down
-     * @param turnForce: right_stick_x, or the amount to turn
-     */
-    public void drive(double xMove, double yMove, double turnForce)
-    {
-
-        //get desired movement magnitude
-        drive =  Math.sqrt(   Math.pow(yMove, 2) + Math.pow(xMove, 2)  ) ;
-
-        //get desired movement direction FIELD ORIENTED by CurrAngle
-        angle =  Math.atan2( yMove , xMove) - CurrAngle;
-
-        //Rotation based turning
-        turn = -Math.abs(turnForce) * turnForce;
-
-        //Place to put the desired angle input
-
-
-        //determines drive coefficient based on turn force and drive force
-        coeff = drive;
-        if(Math.abs(turn) > coeff) coeff = Math.abs(turn);
-        if(coeff > 1) coeff = 1;
-
-
-        //sets each motor to the power of a trig function
-        //Axis is rotated CW PI/4
-        LFPower     =   (drive * Math.sin(angle - Math.PI/4) + turn);
-        RFPower     =   (drive * Math.cos(angle - Math.PI/4) - turn);
-        LBPower     =   (drive * Math.cos(angle - Math.PI/4) + turn);
-        RBPower     =   (drive * Math.sin(angle - Math.PI/4) - turn);
-
-
-        //finds maximum power and makes that 1, increases all others proportionally
-        max = Math.abs(LFPower);
-        if (Math.abs(RFPower) > max) max = Math.abs(RFPower);
-        if (Math.abs(LBPower) > max) max = Math.abs(LBPower);
-        if (Math.abs(RBPower) > max) max = Math.abs(RBPower);
-        LFPower /= (max);
-        RFPower /= (max);
-        LBPower /= (max);
-        RBPower /= (max);
-
-
-        //multiplies by driving coefficient so that sensitivity exists
-        LFPower *= coeff;
-        RFPower *= coeff;
-        LBPower *= coeff;
-        RBPower *= coeff;
-
-
-        //debug telemetry
-        telemetry.addData("coeff:", coeff   );
-        telemetry.addData("LF:",    LFPower );
-        telemetry.addData("RF:",    RFPower );
-        telemetry.addData("LB:",    LBPower );
-        telemetry.addData("RB:",    RBPower );
-
-
-        //actually sets the power to the motors
-        leftFront.setPower(LFPower);
-        rightFront.setPower(RFPower);
-        leftBack.setPower(LBPower);
-        rightBack.setPower(RBPower);
-
-    }
-    public void intakes(double rightMove, double leftMove, boolean turnRight, boolean turnLeft) {
-
-    }
-    /* uncomment if you want to try out desAngle stuff
-    private double pid(double state, double desState, double kp, double kd, double ki)
-    {
-        double error = desState - state;
-
-        double p = error * kp;
-
-
-
-
-
-
-        return p+i+d;
-    }
-    */
 
 
 
@@ -295,8 +84,21 @@ public class PinchPointRobot {
         rightLift.setPower(power);
     }
 
+    public void grip()
+    {
+        //TODO make this one
+    }
 
+    public void ungrip()
+    {
+        //TODO make this one
 
+    }
+    public void liftGrip()
+    {
+        //TODO make this one
+
+    }
 
 
 

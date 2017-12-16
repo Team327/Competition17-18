@@ -61,7 +61,7 @@ public class ConveyorOp extends OpMode
 
         //make the robot
         robot = new ConveyorBot(hardwareMap, telemetry);
-        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.3, 0.8, 0.2, 0.5, 1);
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0.3, 0.5, 0.92, 0.30, 0.55, 0.98);
 
 
         IntakeOpen = true;
@@ -137,11 +137,18 @@ public class ConveyorOp extends OpMode
         prev2a = gamepad2.a;
 
         if(IntakeOpen) {
-            intake.shiftLeft(gamepad2.left_trigger);
+            intake.shiftLeft(gamepad2.right_trigger);
             intake.shiftRight(gamepad2.right_trigger);
 
         }
 
+
+        if(gamepad2.dpad_down)
+            robot.unflip();
+        else if(gamepad2.dpad_up)
+            robot.flip();
+        else
+            robot.stopFlip();
 
 
         if(gamepad2.b)
@@ -150,8 +157,6 @@ public class ConveyorOp extends OpMode
             intakeState = 2;
         else if(gamepad2.y)
             intakeState = 1;
-
-
 
         switch(intakeState)
         {

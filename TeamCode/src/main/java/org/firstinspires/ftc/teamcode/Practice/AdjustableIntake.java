@@ -118,6 +118,7 @@ public class AdjustableIntake {
         pos = leftOut - pos;
 
         this.setLeftArm(pos);
+        this.servoPosTel();
     }
 
 
@@ -127,6 +128,7 @@ public class AdjustableIntake {
         pos = rightOut - pos;
 
         this.setRightArm(pos);
+        this.servoPosTel();
     }
 
 
@@ -192,5 +194,11 @@ public class AdjustableIntake {
         this.setRightIntake(0);
     }
 
+
+    public void servoPosTel()
+    {
+        telemetry.addData("LeftPos:",leftArm.getPosition());
+        telemetry.addData("RightPos:", rightArm.getPosition());
+    }
 
 }
