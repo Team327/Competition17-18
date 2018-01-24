@@ -96,11 +96,13 @@ public class PinchPointRobot extends HolonomicRobot {
     public void lift(double power) {
 
         if (leftLift.getCurrentPosition() > leftMax && power > 0)
-            power = 0;
+            power = power/10;
         else if (leftLift.getCurrentPosition() < 0 && power < 0)
             power = 0;
         rightLift.setPower(power);
         leftLift.setPower(power);
+        telemetry.addData(leftLift.getCurrentPosition());
+        telemetry.addData(rightLift.getCurrentPosition());
     }
 
 
