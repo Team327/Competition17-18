@@ -29,6 +29,7 @@
 package org.firstinspires.ftc.teamcode.Practice;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -51,7 +52,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 
 @TeleOp(name="Practice Holo2", group ="Concept")
-
+@Disabled
 public class PracticeHolonomic extends LinearOpMode {
 
     public static final String TAG = "Vuforia VuMark Sample";

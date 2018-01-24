@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Practice;
 
 
 import android.view.OrientationEventListener;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -36,100 +35,79 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.Locale;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
- * Created by James on 10/2/2017.
+ * Created by James on 12/14/2017.
  */
 
-public class PinchPointRobot extends HolonomicRobot {
+public class ConveyorBot extends HolonomicRobot{
 
-    protected DcMotor leftLift, rightLift;
+    protected DcMotor leftLift, rightLift, flipper;
 
-    protected Servo leftGrip, rightGrip;
+    final double flipperMaxPos = 275;
 
 
-    private double leftMax = 500, rightMax = 500;
-
-    public PinchPointRobot(HardwareMap map, Telemetry tel)
+    public ConveyorBot(HardwareMap map, Telemetry tel)
     {
-        super (map, tel);
 
-
+        super(map, tel);
         leftLift = map.get(DcMotor.class, "leftLift");
         rightLift = map.get(DcMotor.class, "rightLift");
+        flipper   = map.get(DcMotor.class, "flipper");
 
-        leftGrip = map.get(Servo.class, "LeftLift");
-        rightGrip = map.get(Servo.class, "RightLift");
 
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
         rightLift.setDirection(DcMotor.Direction.REVERSE);
-        leftGrip.setDirection(Servo.Direction.FORWARD);
-        rightGrip.setDirection(Servo.Direction.REVERSE);
+        flipper.setDirection(DcMotor.Direction.FORWARD);
 
 
-        leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-
-
-        leftLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
+        flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flipper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flipper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
 
-
-
-
-
-
-
-    //LIFT FUNCTIONS-------------------------------
-
-    public void lift(double power) {
-
-        if (leftLift.getCurrentPosition() > leftMax && power > 0)
-            power = 0;
-        else if (leftLift.getCurrentPosition() < 0 && power < 0)
-            power = 0;
-        rightLift.setPower(power);
+    public void convey(double power)
+    {
         leftLift.setPower(power);
+        rightLift.setPower(power);
     }
 
 
-    public void grip()
+    public void flip()
     {
-        rightGrip.setPosition(0.72);
-        leftGrip.setPosition(0.44);
-    }
+        if(flipper.getCurrentPosition() > -flipperMaxPos)
+        {
+            flipper.setPower(-0.8);
+        }
+        else
+        {
+            flipper.setPower(0);
+        }
 
-    public void ungrip()
+    }
+    public void unflip()
     {
-        rightGrip.setPosition(0.3);
-        leftGrip.setPosition(0.16);
-
+        if(flipper.getCurrentPosition() < 0)
+        {
+            flipper.setPower(0.8);
+        }
+        else
+        {
+            flipper.setPower(0);
+        }
     }
-
-    public void gripUp(){
-        rightGrip.setPosition(rightGrip.getPosition()+.02);
-        leftGrip.setPosition(leftGrip.getPosition()+0.02);
-    }
-    public void gripDown(){
-        rightGrip.setPosition(rightGrip.getPosition()-0.02);
-        leftGrip.setPosition(leftGrip.getPosition()-0.02);
-    }
-    public void liftGrip()
+    public void stopFlip()
     {
-        rightGrip.setPosition(1);
-        leftGrip.setPosition(0.74);
-
+        flipper.setPower(0);
     }
 
 

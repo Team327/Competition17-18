@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+//testing on robotics computer
 package org.firstinspires.ftc.teamcode.Practice;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -49,7 +49,7 @@ public class PinchPointLiftOP extends OpMode
 
 
 
-    private boolean IntakeOpen;
+    private boolean IntakeOpen, Grip;
 
 
     /*
@@ -61,13 +61,16 @@ public class PinchPointLiftOP extends OpMode
 
         //make the robot
         robot = new PinchPointRobot(hardwareMap, telemetry);
-        intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.8, 1, 0.2, 0.8, 1);
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0.1, 0.3, 0.8, 0.3, 0.5, 1);
 
 
         IntakeOpen = true;
+        Grip = true;
         intake.fullOpen();
 
         telemetry.addData("Status", "Initialized");
+
+
     }
 
 
@@ -100,7 +103,8 @@ public class PinchPointLiftOP extends OpMode
 
 
 
-    private boolean prev1a;
+    private boolean prev2a,         prev2lb;
+
     private int     intakeState;
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -108,25 +112,40 @@ public class PinchPointLiftOP extends OpMode
     @Override
     public void loop() {
 
-
-
-
+        /*currently used buttons gamepad 1:
+         * left_stick
+         * right_stcik
+         * */
+        /*currently used buttons gamepad 2:
+        * a
+        * right_trigger
+        * left_bumper
+        * b
+        * left_stick
+        * right_stick
+        * x
+        * y
+        * */
 
         telemetry.addData("Status", "Driving, I hope");
 
+        telemetry.addData("leftGrip", robot.leftGrip.getPosition());
+        telemetry.addData("rightGrip", robot.rightGrip.getPosition());
+
         robot.updateSensors();
 
-        //robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        robot.lift((gamepad2.right_trigger-gamepad1.left_trigger)/5.);
+        robot.lift(gamepad2.left_stick_y);
 
 
-        if(gamepad1.a && !prev1a) {
+        if(gamepad2.a && !prev2a) {
             if (IntakeOpen)
             {
                 intake.storeArms();
                 intakeState = 0;
                 IntakeOpen = false;
+//                robot.liftGrip();
             }
             else
             {
@@ -134,26 +153,43 @@ public class PinchPointLiftOP extends OpMode
                 IntakeOpen = true;
             }
         }
-        prev1a = gamepad1.a;
+        prev2a = gamepad2.a;
 
         if(IntakeOpen) {
-            if (gamepad1.left_bumper) {
-                intake.shiftLeft();
-            } else if (gamepad1.right_bumper) {
-                intake.shiftRight();
-            }
+            intake.shiftLeft(gamepad2.right_trigger);
+            intake.shiftRight(gamepad2.right_trigger);
         }
 
+        if(gamepad2.dpad_up){
+            robot.gripUp();
+        }
+        if(gamepad2.dpad_down){
+            robot.gripDown();
+        }
+
+        if(gamepad2.left_bumper && !prev2lb && IntakeOpen) {
+
+            if(Grip)
+            {
+                robot.ungrip();
+                Grip = !Grip;
+            }
+            else if(!Grip)
+            {
+                robot.grip();
+                Grip = !Grip;
+
+            }
+        }
+        prev2lb = gamepad2.left_bumper;
 
 
-        if(gamepad1.b)
+        if(gamepad2.b)
             intakeState = 3;
-        else if(gamepad1.x)
+        else if(gamepad2.x)
             intakeState = 2;
-        else if(gamepad1.y)
+        else if(gamepad2.y)
             intakeState = 1;
-
-
 
         switch(intakeState)
         {
