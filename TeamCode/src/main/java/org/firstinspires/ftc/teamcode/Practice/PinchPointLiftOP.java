@@ -138,6 +138,7 @@ public class PinchPointLiftOP extends OpMode
 
         robot.lift(gamepad2.left_stick_y);
 
+
         if(gamepad2.a && !prev2a) {
             if (IntakeOpen)
             {
