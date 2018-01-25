@@ -40,11 +40,11 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="PinchPointLiftOP", group="Iterative Opmode")
+@TeleOp(name="ConveyorOp", group="Iterative Opmode")
 
-public class PinchPointLiftOP extends OpMode
+public class ConveyorOp extends OpMode
 {
-    private PinchPointRobot      robot;
+    private ConveyorBot         robot;
     private AdjustableIntake    intake;
 
 
@@ -60,7 +60,7 @@ public class PinchPointLiftOP extends OpMode
         telemetry.addData("Status", "Initializing");
 
         //make the robot
-        robot = new PinchPointRobot(hardwareMap, telemetry);
+        robot = new ConveyorBot(hardwareMap, telemetry);
         intake = new AdjustableIntake(hardwareMap, telemetry, 0, 0.6, 0.8, 0.2, 0.8, 1);
 
 
@@ -118,8 +118,7 @@ public class PinchPointLiftOP extends OpMode
 
         //robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-
-        robot.lift(gamepad2.right_trigger-gamepad2.left_trigger);
+        robot.convey(gamepad2.right_trigger-gamepad2.left_trigger);
 
 
         if(gamepad1.a && !prev1a) {
