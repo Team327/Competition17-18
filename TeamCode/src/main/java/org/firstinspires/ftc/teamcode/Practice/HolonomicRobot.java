@@ -266,6 +266,7 @@ public class HolonomicRobot {
         //get desired movement magnitude
         drive =  Math.sqrt(   Math.pow(yMove, 2) + Math.pow(xMove, 2)  ) ;
 
+        drive = Math.pow(drive, .5);
         //get desired movement direction FIELD ORIENTED by CurrAngle
         angle =  Math.atan2( yMove , xMove) - CurrAngle;
 
