@@ -101,8 +101,8 @@ public class PinchPointRobot extends HolonomicRobot {
             power = 0;
         rightLift.setPower(power);
         leftLift.setPower(power);
-        telemetry.addData(leftLift.getCurrentPosition());
-        telemetry.addData(rightLift.getCurrentPosition());
+        telemetry.addData("Left:", leftLift.getCurrentPosition());
+        telemetry.addData("Right:", rightLift.getCurrentPosition());
     }
 
 
