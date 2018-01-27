@@ -58,18 +58,24 @@ public class ConveyorOp extends OpMode
     @Override
     public void init() {
         telemetry.addData("Status", "Initializing");
-
+        telemetry.log().add(">>>>>Start");
         //make the robot
-        robot = new ConveyorBot(hardwareMap, telemetry);
-        intake = new AdjustableIntake(hardwareMap, telemetry, 0.3, 0.5, 0.92, 0.30, 0.55, 0.98);
 
+        telemetry.log().add(">>>>>Making Robot");
+        robot = new ConveyorBot(hardwareMap, telemetry);
+        telemetry.log().add(">>>>>Made Robot");
+
+
+        telemetry.log().add("Making intake");
+        intake = new AdjustableIntake(hardwareMap, telemetry, 0.3, 0.5, 0.92, 0.30, 0.55, 0.98);
+        telemetry.log().add("Made Intake");
 
         IntakeOpen = true;
         intake.fullOpen();
 
         telemetry.addData("Status", "Initialized");
 
-
+        telemetry.log().add("Done");
     }
 
 
