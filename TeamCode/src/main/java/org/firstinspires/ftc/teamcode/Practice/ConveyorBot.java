@@ -77,6 +77,7 @@ public class ConveyorBot extends HolonomicRobot{
 
     public void convey(double power)
     {
+
         leftLift.setPower(power);
         rightLift.setPower(power);
     }
@@ -87,6 +88,7 @@ public class ConveyorBot extends HolonomicRobot{
         if(flipper.getCurrentPosition() > -flipperMaxPos)
         {
             flipper.setPower(-0.8);
+            convey(.4);
         }
         else
         {
@@ -99,6 +101,7 @@ public class ConveyorBot extends HolonomicRobot{
         if(flipper.getCurrentPosition() < 0)
         {
             flipper.setPower(0.8);
+            convey(-0.4);
         }
         else
         {

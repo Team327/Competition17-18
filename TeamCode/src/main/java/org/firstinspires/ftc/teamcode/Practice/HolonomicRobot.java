@@ -46,6 +46,7 @@ public class HolonomicRobot {
 
     VuforiaLocalizer vuforia;
     int cameraMonitorViewId;
+    VuforiaTrackables relicTrackables;
 
     protected DcMotor leftFront, rightFront, leftBack, rightBack;
 
@@ -66,7 +67,7 @@ public class HolonomicRobot {
     {
         telemetry = tel;
         hardwareInit(map);
-        init();
+
 
     }
 
@@ -134,7 +135,16 @@ public class HolonomicRobot {
         Vparameters.vuforiaLicenseKey = "Ae/sMsj/////AAAAGeOrJwP8WE9Zj9QPRamQ5yeKrIOrreOb5Ll4kjTkp+iZvq2Qxeku5BJWo7vmmij58qQj4xywefvTAErrY0NnU1QtAvknH55vMIM9BMi3CJ3jQGza2778CKEdZ5Cr7DcGxQQmp0vcO0ndTYfZ8aRwUdnSt88YTn1NjMspDHrwL7ba/7kEG56UQVBNwuQJ9uDf+tE2u1C0peppbLEuj/Fv1cSAaCn4TvE2kaPp/qun3Rzr9K6FPul9WkxA+DG+lPWqgyDS/GtB3UJctkP2L2py0yccc3gFBLsHpNgX9oY3eLxZpvIxCqWHLpgr6NKZUDx/vFWPIUZPYFCBwuy4Hfj9oxL66sOEhyrtWFyxVfuko63v";
         Vparameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(Vparameters);
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
 
+        relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate");
+
+
+
+
+        CurrAngle = 0 ;
+        CurrAngleOffset = 0;
 
     }
 
@@ -149,40 +159,38 @@ public class HolonomicRobot {
 
     private VuforiaTrackable relicTemplate;
 
+    @Deprecated
     public void init()
     {
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
 
-        relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate");
+
+
+    }
+
+    public void initVuf()
+    {
         relicTrackables.activate();
-
-
-
-
-        CurrAngle = 0 ;
-        CurrAngleOffset = 0;
-
 
     }
 
     //SENSORS ----------------------------------------------------------
 
-    public void updateSensors()
+    public String updateSensors()
     {
+        String Output = "";
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
         if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
                 /* Found an instance of the template. In the actual game, you will probably
                  * loop until this condition occurs, then move on to act accordingly depending
                  * on which VuMark was visible. */
-            telemetry.addData("VuMark", "%s visible", vuMark);
+            Output+=String.format("%s visible", vuMark);
 
                 /* For fun, we also exhibit the navigational pose. In the Relic Recovery game,
                  * it is perhaps unlikely that you will actually need to act on this pose information, but
                  * we illustrate it nevertheless, for completeness. */
             OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
-            telemetry.addData("Pose", format(pose));
+            Output+= format(pose);
 
                 /* We further illustrate how to decompose the pose into useful rotational and
                  * translational components */
@@ -202,12 +210,14 @@ public class HolonomicRobot {
             }
         }
         else {
-            telemetry.addData("VuMark", "not visible");
+            Output +="not visible";
         }
 
-        telemetry.update();
+
+
 
         CurrAngle = CurrAngleOffset-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+        return Output;
     }
     public String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";

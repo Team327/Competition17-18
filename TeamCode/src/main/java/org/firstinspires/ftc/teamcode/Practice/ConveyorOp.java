@@ -49,6 +49,7 @@ public class ConveyorOp extends OpMode
 
 
 
+    boolean hasRunInit;
     private boolean IntakeOpen;
 
 
@@ -58,17 +59,12 @@ public class ConveyorOp extends OpMode
     @Override
     public void init() {
         telemetry.addData("Status", "Initializing");
-        telemetry.log().add(">>>>>Start");
         //make the robot
 
-        telemetry.log().add(">>>>>Making Robot");
         robot = new ConveyorBot(hardwareMap, telemetry);
-        telemetry.log().add(">>>>>Made Robot");
 
 
-        telemetry.log().add("Making intake");
         intake = new AdjustableIntake(hardwareMap, telemetry, 0.3, 0.5, 0.92, 0.30, 0.55, 0.98);
-        telemetry.log().add("Made Intake");
 
         IntakeOpen = true;
         intake.fullOpen();
@@ -76,6 +72,7 @@ public class ConveyorOp extends OpMode
         telemetry.addData("Status", "Initialized");
 
         telemetry.log().add("Done");
+        hasRunInit = false;
     }
 
 
@@ -87,7 +84,11 @@ public class ConveyorOp extends OpMode
     @Override
     public void init_loop() {
         telemetry.addData("Status:", "Maybe we could put an auto here, just call the loop here.");
-
+        if(!hasRunInit)
+        {
+            robot.initVuf();
+            hasRunInit = true;
+        }
 
 
     }
@@ -120,13 +121,14 @@ public class ConveyorOp extends OpMode
 
 
 
-        telemetry.addData("Status", "Driving, I hope");
+        telemetry.addData("Status", "Driving");
+        telemetry.addData("VuMark", robot.updateSensors());
 
         robot.updateSensors();
 
         robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        robot.convey(gamepad2.left_stick_y);
+        robot.convey(-gamepad2.right_stick_y);
 
 
         if(gamepad2.a && !prev2a) {

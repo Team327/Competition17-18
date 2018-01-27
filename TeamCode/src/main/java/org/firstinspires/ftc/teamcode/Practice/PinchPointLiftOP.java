@@ -48,6 +48,7 @@ public class PinchPointLiftOP extends OpMode
     private AdjustableIntake    intake;
 
 
+    boolean hasRunInit;
 
     private boolean IntakeOpen, Grip;
 
@@ -69,7 +70,7 @@ public class PinchPointLiftOP extends OpMode
         intake.fullOpen();
 
         telemetry.addData("Status", "Initialized");
-
+        hasRunInit = false;
 
     }
 
@@ -82,6 +83,11 @@ public class PinchPointLiftOP extends OpMode
     @Override
     public void init_loop() {
         telemetry.addData("Status:", "Maybe we could put an auto here, just call the loop here.");
+        if(!hasRunInit)
+        {
+            robot.initVuf();
+            hasRunInit = true;
+        }
 
 
 
