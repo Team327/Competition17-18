@@ -54,6 +54,10 @@ public class HolonomicRobot {
     double CurrAngle;
     double CurrAngleOffset;
 
+    double[] vuPos;//stores the position information of the last visible vuMark
+    double[] vuRot;//stores the rotation information of the last visible vuMark
+    boolean vuVisible; //stores weather or not there is a vuMark in view that can be used for position/rotation
+
 
     //protected Servo
 
@@ -68,7 +72,10 @@ public class HolonomicRobot {
         telemetry = tel;
         hardwareInit(map);
 
-
+        //initialize variables for storing vuMark information.
+        vuPos = new double[]{0,0,0};
+        vuRot = new double[]{0,0,0};
+        vuVisible = false;
     }
 
 
@@ -180,7 +187,7 @@ public class HolonomicRobot {
         String Output = "";
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
         if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-
+            vuVisible = false;
                 /* Found an instance of the template. In the actual game, you will probably
                  * loop until this condition occurs, then move on to act accordingly depending
                  * on which VuMark was visible. */
@@ -202,15 +209,19 @@ public class HolonomicRobot {
                 double tX = trans.get(0);
                 double tY = trans.get(1);
                 double tZ = trans.get(2);
+                vuPos = new double[]{tX,tY,tZ};
 
                 // Extract the rotational components of the target relative to the robot
                 double rX = rot.firstAngle;
                 double rY = rot.secondAngle;
                 double rZ = rot.thirdAngle;
+                vuRot = new double[]{rX,rY,rZ};
+                vuVisible = true;
             }
         }
         else {
-            Output +="not visible";
+            Output += "not visible";
+            vuVisible = false;
         }
 
 
@@ -264,7 +275,7 @@ public class HolonomicRobot {
     {
 
         //get desired movement magnitude
-        drive =  Math.sqrt(   Math.pow(yMove, 2) + Math.pow(xMove, 2)  ) ;
+        drive =  Math.sqrt(   Math.pow(yMove, 2) + Math.pow(xMove, 2)  );
 
         drive = Math.pow(drive, .5);
         //get desired movement direction FIELD ORIENTED by CurrAngle

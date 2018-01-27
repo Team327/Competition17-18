@@ -49,8 +49,7 @@ public class PinchPointLiftOP extends OpMode
 
 
     boolean hasRunInit;
-
-    private boolean IntakeOpen, Grip;
+    private boolean IntakeOpen, Grip, runningAuto;
 
 
     /*
@@ -71,6 +70,7 @@ public class PinchPointLiftOP extends OpMode
 
         telemetry.addData("Status", "Initialized");
         hasRunInit = false;
+        runningAuto = true;
 
     }
 
@@ -112,33 +112,12 @@ public class PinchPointLiftOP extends OpMode
     private boolean prev2a,         prev2lb;
 
     private int     intakeState;
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
 
-        /*currently used buttons gamepad 1:
-         * left_stick
-         * right_stcik
-         * */
-        /*currently used buttons gamepad 2:
-        * a
-        * right_trigger
-        * left_bumper
-        * b
-        * left_stick
-        * right_stick
-        * x
-        * y
-        * */
+    private void autoLoop(){//a loop for the autonomous period
 
-        telemetry.addData("Status", "Driving, I hope");
+    }
 
-        telemetry.addData("leftGrip", robot.leftGrip.getPosition());
-        telemetry.addData("rightGrip", robot.rightGrip.getPosition());
-
-        robot.updateSensors();
+    private void driverLoop(){//a loop for the driver control period
 
         robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
@@ -180,7 +159,7 @@ public class PinchPointLiftOP extends OpMode
                 robot.ungrip();
                 Grip = !Grip;
             }
-            else if(!Grip)
+            else //if(!Grip) <- don't know why this is necessary. Is this supposed to help if Grip is Undefined?
             {
                 robot.grip();
                 Grip = !Grip;
@@ -224,14 +203,47 @@ public class PinchPointLiftOP extends OpMode
                 intake.stopIntake();
                 break;
         }
+    }
 
+    /*
+     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+     */
+    @Override
+    public void loop() {
 
+        /*currently used buttons gamepad 1:
+         * left_stick
+         * right_stick
+         * */
+        /*currently used buttons gamepad 2:
+        * a
+        * right_trigger
+        * left_bumper
+        * b
+        * left_stick
+        * right_stick
+        * x
+        * y
+        * */
 
+        telemetry.addData("Status", "Driving, I hope");
 
+        telemetry.addData("leftGrip", robot.leftGrip.getPosition());
+        telemetry.addData("rightGrip", robot.rightGrip.getPosition());
 
+        robot.updateSensors();
 
-
-
+        //runs either the driver control or the autonomous loop
+        if(runningAuto){
+            autoLoop();
+            if(gamepad1.start&&gamepad1.back){//if the driver presses both start and back, exit autonomous and start driver control
+                runningAuto = false;
+            }
+        }
+        else
+        {
+            driverLoop();
+        }
 
     }
 

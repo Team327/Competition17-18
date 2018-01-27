@@ -50,7 +50,7 @@ public class ConveyorOp extends OpMode
 
 
     boolean hasRunInit;
-    private boolean IntakeOpen;
+    private boolean IntakeOpen, runningAuto;
 
 
     /*
@@ -73,6 +73,7 @@ public class ConveyorOp extends OpMode
 
         telemetry.log().add("Done");
         hasRunInit = false;
+        runningAuto = true;
     }
 
 
@@ -111,21 +112,12 @@ public class ConveyorOp extends OpMode
 
     private boolean prev2a;
     private int     intakeState;
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
 
+    private void autoLoop(){ // a loop for autonomous mode
 
+    }
 
-
-
-        telemetry.addData("Status", "Driving");
-        telemetry.addData("VuMark", robot.updateSensors());
-
-        robot.updateSensors();
-
+    private void driverLoop(){ //a loop for driver control mode
         robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         robot.convey(-gamepad2.right_stick_y);
@@ -195,11 +187,32 @@ public class ConveyorOp extends OpMode
                 intake.stopIntake();
                 break;
         }
+    }
+    /*
+     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+     */
+    @Override
+    public void loop() {
 
 
 
 
 
+        telemetry.addData("Status", "Driving");
+        telemetry.addData("VuMark", robot.updateSensors());
+
+        robot.updateSensors();
+        //runs either the driver control loop or the autonomous loop
+        if(runningAuto){
+            autoLoop();
+            if(gamepad1.start&&gamepad1.back){//if you press start and back at the same time, stop the autonomous loop
+                runningAuto = false;
+            }
+        }
+        else
+        {
+            driverLoop();
+        }
 
 
 
