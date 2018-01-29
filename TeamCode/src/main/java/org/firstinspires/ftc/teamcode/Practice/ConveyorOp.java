@@ -120,7 +120,13 @@ public class ConveyorOp extends OpMode
     private void driverLoop(){ //a loop for driver control mode
         robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        robot.convey(-gamepad2.right_stick_y);
+        if(gamepad2.right_bumper) {
+            robot.convey(-gamepad2.right_stick_y/4);
+        }
+        else
+        {
+            robot.convey(-gamepad2.right_stick_y);
+        }
 
 
         if(gamepad2.a && !prev2a) {
