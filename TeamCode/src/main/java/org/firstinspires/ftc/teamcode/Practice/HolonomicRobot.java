@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode.Practice;
 
         import com.qualcomm.hardware.bosch.BNO055IMU;
         import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+        //import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
         import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
         import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -57,6 +58,10 @@ public class HolonomicRobot {
     double[] vuPos;//stores the position information of the last visible vuMark
     double[] vuRot;//stores the rotation information of the last visible vuMark
     boolean vuVisible; //stores weather or not there is a vuMark in view that can be used for position/rotation
+
+    Position currentPos = new Position();
+    Velocity currentVelocity = new Velocity();
+    long pMillis = 0;
 
 
     //protected Servo
@@ -120,7 +125,7 @@ public class HolonomicRobot {
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new TestAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
@@ -147,12 +152,11 @@ public class HolonomicRobot {
         relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
 
-
+        pMillis = System.currentTimeMillis();
 
 
         CurrAngle = 0 ;
         CurrAngleOffset = 0;
-
     }
 
 
@@ -226,8 +230,10 @@ public class HolonomicRobot {
 
 
 
-
+        long newMillis = System.currentTimeMillis();
         CurrAngle = CurrAngleOffset-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+        currentPos = imu.getPosition();
+        pMillis = newMillis;
         return Output;
     }
     public String format(OpenGLMatrix transformationMatrix) {
@@ -250,6 +256,10 @@ public class HolonomicRobot {
     public void setAngleRad(double radians)
     {
         CurrAngleOffset = radians;
+    }
+
+    public Position getCurrentPos(){
+        return currentPos;
     }
 
     //DRIVETRAIN -------------------------------------------------------

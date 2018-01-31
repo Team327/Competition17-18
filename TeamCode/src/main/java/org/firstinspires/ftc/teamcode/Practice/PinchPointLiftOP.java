@@ -121,6 +121,10 @@ public class PinchPointLiftOP extends OpMode
 
         robot.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
+        telemetry.addData("X pos", robot.getCurrentPos().x);
+        telemetry.addData("Y pos", robot.getCurrentPos().y);
+        telemetry.addData("Z pos", robot.getCurrentPos().z);
+
         robot.lift(gamepad2.left_stick_y);
 
 
