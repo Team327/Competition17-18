@@ -43,13 +43,13 @@ public class Auto1 {
 
             case START:
                 robot.drive(0,0,-.3);
-                if(elapsed > 500) currState = STATE.DOWNARM;
+                if(elapsed > 700) currState = STATE.DOWNARM;
                 break;
 
             case DOWNARM:
                 robot.drive(0,0,0);
                 robot.dropJewelArm();
-                if(elapsed > 1500) currState = STATE.DETECTCOLOR;
+                if(elapsed > 2500) currState = STATE.DETECTCOLOR;
                 break;
 
             case DETECTCOLOR:
@@ -61,24 +61,24 @@ public class Auto1 {
 
             case TURNRIGHT1:
                 robot.drive(0,0,0.3);
-                if (elapsed > 2000) currState = STATE.TURNRIGHT2;
+                if (elapsed > 3000) currState = STATE.TURNRIGHT2;
                 break;
 
             case TURNRIGHT2:
                 robot.liftJewelArm();
                 robot.drive(0,0,-0.3);
-                if (elapsed > 2500) currState = STATE.END;
+                if (elapsed > 3500) currState = STATE.END;
                 break;
 
             case TURNLEFT1:
                 robot.drive(0,0,-0.3);
-                if (elapsed > 2000) currState = STATE.TURNRIGHT2;
+                if (elapsed > 3000) currState = STATE.TURNRIGHT2;
                 break;
 
             case TURNLEFT2:
                 robot.liftJewelArm();
                 robot.drive(0,0,0.3);
-                if (elapsed > 2500) currState = STATE.END;
+                if (elapsed > 3500) currState = STATE.END;
                 break;
 
             case END:

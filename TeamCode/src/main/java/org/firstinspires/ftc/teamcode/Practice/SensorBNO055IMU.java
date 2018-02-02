@@ -85,7 +85,7 @@ public class SensorBNO055IMU extends LinearOpMode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new TestAccelerationIntegrator();
-
+        parameters.accelBandwidth = BNO055IMU.AccelBandwidth.HZ1000;
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
@@ -102,32 +102,37 @@ public class SensorBNO055IMU extends LinearOpMode
 //        imu.startAccelerationIntegration(new Position(), new Velocity(), 1);
 
         Position        pos = new Position()        ;
+        Position        pos2 = new Position();
         Velocity        vel = new Velocity()        ;
         Acceleration    acc = new Acceleration()    ;
 
         // Loop and update the dashboard
         double start = System.currentTimeMillis();
         double elapsed, prev;
+        imu.startAccelerationIntegration(imu.getPosition(), imu.getVelocity(), 1);
         while (opModeIsActive()) {
             elapsed = System.currentTimeMillis() - start;
-            acc = imu.getAcceleration();
+            acc = imu.getLinearAcceleration();
 
-            if(elapsed > 1)
-            {
-                vel.xVeloc  += acc.xAccel*elapsed/1000;
-                vel.yVeloc  += acc.yAccel*elapsed/1000;
-                vel.zVeloc  += acc.zAccel*elapsed/1000;
+            if(elapsed > 1) {
+                vel.xVeloc += acc.xAccel * elapsed / 1000;
+                //vel.yVeloc  += acc.yAccel*elapsed/1000;
+                vel.zVeloc += acc.zAccel * elapsed / 1000;
 
-                pos.x       += vel.xVeloc*elapsed/1000;
-                pos.y       += vel.yVeloc*elapsed/1000;
-                pos.z       += vel.zVeloc*elapsed/1000;
+                pos.x += vel.xVeloc * elapsed / 1000;
+                //pos.y       += vel.yVeloc*elapsed/1000;
+                pos.z += vel.zVeloc * elapsed / 1000;
+                pos2 = imu.getPosition();
+                start = System.currentTimeMillis();
 
-
-                elapsed = 0;
-                start=System.currentTimeMillis();
 
             }
+            telemetry.addData("xAccel", acc.xAccel);
+            telemetry.addData("yAccel", acc.yAccel);
+            telemetry.addData("zAccel", acc.zAccel);
+            telemetry.addData("elapsed", elapsed);
             telemetry.addData("Position", pos);
+            telemetry.addData("Position2", pos2);
             telemetry.update();
 
         }
