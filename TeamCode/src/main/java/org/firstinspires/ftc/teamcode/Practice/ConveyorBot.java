@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Practice;
 
 
+import android.graphics.Color;
 import android.view.OrientationEventListener;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -8,9 +9,11 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -47,6 +50,10 @@ public class ConveyorBot extends HolonomicRobot{
 
     protected DcMotor leftLift, rightLift, flipper;
 
+    protected Servo   jewelArm;
+
+    protected ColorSensor armColor;
+
     final double flipperMaxPos = 275;
 
 
@@ -57,7 +64,7 @@ public class ConveyorBot extends HolonomicRobot{
         leftLift = map.get(DcMotor.class, "leftLift");
         rightLift = map.get(DcMotor.class, "rightLift");
         flipper   = map.get(DcMotor.class, "flipper");
-
+        jewelArm  = map.get(Servo.class, "jewelArm");
 
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
@@ -72,8 +79,33 @@ public class ConveyorBot extends HolonomicRobot{
         flipper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         flipper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
+
+        armColor = map.get(ColorSensor.class, "armColor");
     }
 
+    public void liftJewelArm()
+    {
+        jewelArm.setPosition(0);
+    }
+    public void dropJewelArm()
+    {
+        jewelArm.setPosition(0.9);
+    }
+
+
+    public boolean jewelIsRed()
+    {
+        float hsvValues[] = {0F, 0F, 0F};
+        boolean output = true;
+        Color.RGBToHSV((int) (armColor.red() * 255),
+                (int) (armColor.green() * 255),
+                (int) (armColor.blue() * 255),
+                hsvValues);
+        output = (   hsvValues[0] < 100 || hsvValues[0] > 300   );
+
+        return output;
+    }
 
     public void convey(double power)
     {

@@ -21,13 +21,13 @@
  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+         * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+         * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+         * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+         * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+         */
 
-package org.firstinspires.ftc.teamcode.Practice;
+         package org.firstinspires.ftc.teamcode.Practice;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -48,6 +48,8 @@ public class ConveyorOp extends OpMode
     private AdjustableIntake    intake;
 
 
+    private Auto1               auto;
+
 
     boolean hasRunInit;
     private boolean IntakeOpen, runningAuto;
@@ -58,11 +60,13 @@ public class ConveyorOp extends OpMode
      */
     @Override
     public void init() {
+
+
         telemetry.addData("Status", "Initializing");
         //make the robot
 
         robot = new ConveyorBot(hardwareMap, telemetry);
-
+        auto = new Auto1(robot);
 
         intake = new AdjustableIntake(hardwareMap, telemetry, 0.3, 0.5, 0.92, 0.30, 0.55, 0.98);
 
@@ -102,6 +106,7 @@ public class ConveyorOp extends OpMode
      */
     @Override
     public void start() {
+        auto.startTime();
         telemetry.addData("Status:", "we could put other stuff in here, like ");
 
 
@@ -114,7 +119,7 @@ public class ConveyorOp extends OpMode
     private int     intakeState;
 
     private void autoLoop(){ // a loop for autonomous mode
-
+        auto.loop();
     }
 
     private void driverLoop(){ //a loop for driver control mode

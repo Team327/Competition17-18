@@ -84,7 +84,7 @@ public class SensorBNO055IMU extends LinearOpMode
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new TestAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
@@ -99,11 +99,37 @@ public class SensorBNO055IMU extends LinearOpMode
         waitForStart();
 
         // Start the logging of measured acceleration
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+//        imu.startAccelerationIntegration(new Position(), new Velocity(), 1);
+
+        Position        pos = new Position()        ;
+        Velocity        vel = new Velocity()        ;
+        Acceleration    acc = new Acceleration()    ;
 
         // Loop and update the dashboard
+        double start = System.currentTimeMillis();
+        double elapsed, prev;
         while (opModeIsActive()) {
+            elapsed = System.currentTimeMillis() - start;
+            acc = imu.getAcceleration();
+
+            if(elapsed > 1)
+            {
+                vel.xVeloc  += acc.xAccel*elapsed/1000;
+                vel.yVeloc  += acc.yAccel*elapsed/1000;
+                vel.zVeloc  += acc.zAccel*elapsed/1000;
+
+                pos.x       += vel.xVeloc*elapsed/1000;
+                pos.y       += vel.yVeloc*elapsed/1000;
+                pos.z       += vel.zVeloc*elapsed/1000;
+
+
+                elapsed = 0;
+                start=System.currentTimeMillis();
+
+            }
+            telemetry.addData("Position", pos);
             telemetry.update();
+
         }
     }
 
