@@ -46,7 +46,7 @@ public class PinchPointLiftOP extends OpMode
 {
     private PinchPointRobot      robot;
     private AdjustableIntake    intake;
-
+    private Auto2               auto;
 
     boolean hasRunInit;
     private boolean IntakeOpen, Grip, runningAuto;
@@ -62,7 +62,7 @@ public class PinchPointLiftOP extends OpMode
         //make the robot
         robot = new PinchPointRobot(hardwareMap, telemetry);
         intake = new AdjustableIntake(hardwareMap, telemetry, 0.1, 0.3, 0.8, 0.3, 0.5, 1);
-
+        auto = new Auto2(robot);
 
         IntakeOpen = true;
         Grip = true;
@@ -102,7 +102,7 @@ public class PinchPointLiftOP extends OpMode
     @Override
     public void start() {
         telemetry.addData("Status:", "we could put other stuff in here, like ");
-
+        auto.startTime();
 
 
     }
@@ -114,7 +114,7 @@ public class PinchPointLiftOP extends OpMode
     private int     intakeState;
 
     private void autoLoop(){//a loop for the autonomous period
-
+        auto.loop();
     }
 
     private void driverLoop(){//a loop for the driver control period

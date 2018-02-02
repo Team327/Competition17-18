@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.Practice;
 
 
+import android.graphics.Color;
 import android.view.OrientationEventListener;
+
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -45,8 +48,8 @@ public class PinchPointRobot extends HolonomicRobot {
 
     protected DcMotor leftLift, rightLift;
 
-    protected Servo leftGrip, rightGrip;
-
+    protected Servo leftGrip, rightGrip, jewelArm;
+    protected ColorSensor armColor;
 
     private double leftMax = 500, rightMax = 500;
 
@@ -61,6 +64,7 @@ public class PinchPointRobot extends HolonomicRobot {
         leftGrip = map.get(Servo.class, "LeftLift");
         rightGrip = map.get(Servo.class, "RightLift");
 
+        jewelArm = map.get(Servo.class, "jewelArm");
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
         rightLift.setDirection(DcMotor.Direction.REVERSE);
@@ -82,12 +86,35 @@ public class PinchPointRobot extends HolonomicRobot {
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        armColor = map.get(ColorSensor.class, "armColor");
     }
 
 
 
 
 
+    public void liftJewelArm()
+    {
+        jewelArm.setPosition(0);
+    }
+    public void dropJewelArm()
+    {
+        jewelArm.setPosition(0.9);
+    }
+
+
+    public boolean jewelIsRed()
+    {
+        float hsvValues[] = {0F, 0F, 0F};
+        boolean output = true;
+        Color.RGBToHSV((int) (armColor.red() * 255),
+                (int) (armColor.green() * 255),
+                (int) (armColor.blue() * 255),
+                hsvValues);
+        output = (   hsvValues[0] < 100 || hsvValues[0] > 300   );
+
+        return output;
+    }
 
 
 
