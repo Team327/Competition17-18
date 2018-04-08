@@ -9,6 +9,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -50,11 +51,11 @@ public class ConveyorBot extends HolonomicRobot{
 
     protected DcMotor leftLift, rightLift, flipper;
 
-    protected Servo   jewelArm;
+    protected CRServo jewelArm;
 
     protected ColorSensor armColor;
 
-    final double flipperMaxPos = 275;
+    final double flipperMaxPos = 120;
 
 
     public ConveyorBot(HardwareMap map, Telemetry tel)
@@ -64,7 +65,7 @@ public class ConveyorBot extends HolonomicRobot{
         leftLift = map.get(DcMotor.class, "leftLift");
         rightLift = map.get(DcMotor.class, "rightLift");
         flipper   = map.get(DcMotor.class, "flipper");
-        jewelArm  = map.get(Servo.class, "jewelArm");
+        jewelArm  = map.get(CRServo.class, "jewelArm");
 
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
@@ -84,13 +85,22 @@ public class ConveyorBot extends HolonomicRobot{
         armColor = map.get(ColorSensor.class, "armColor");
     }
 
+
+
     public void liftJewelArm()
     {
-        jewelArm.setPosition(0);
+        jewelArm.setPower(-1);
     }
+
     public void dropJewelArm()
     {
-        jewelArm.setPosition(0.9);
+        jewelArm.setPower(1);
+    }
+
+    public void stopJewelArm()
+    {
+        jewelArm.setPower(0);
+
     }
 
 
@@ -119,12 +129,12 @@ public class ConveyorBot extends HolonomicRobot{
     {
         if(flipper.getCurrentPosition() > -flipperMaxPos)
         {
-            flipper.setPower(-0.8);
-            convey(.4);
+            flipper.setPower(-0.2);
+            //convey(.4);
         }
         else
         {
-            flipper.setPower(0);
+            flipper.setPower(0.05);
         }
 
     }
@@ -132,8 +142,8 @@ public class ConveyorBot extends HolonomicRobot{
     {
         if(flipper.getCurrentPosition() < 0)
         {
-            flipper.setPower(0.8);
-            convey(-0.4);
+            flipper.setPower(0.2);
+            //convey(-0.4);
         }
         else
         {

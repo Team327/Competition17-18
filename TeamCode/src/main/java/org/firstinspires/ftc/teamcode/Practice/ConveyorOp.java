@@ -119,7 +119,7 @@ public class ConveyorOp extends OpMode
     private int     intakeState;
 
     private void autoLoop(){ // a loop for autonomous mode
-        auto.loop();
+            auto.loop();
     }
 
     private void driverLoop(){ //a loop for driver control mode

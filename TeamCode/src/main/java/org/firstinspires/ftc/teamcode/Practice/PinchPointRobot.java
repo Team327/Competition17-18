@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Practice;
 import android.graphics.Color;
 import android.view.OrientationEventListener;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -48,7 +49,8 @@ public class PinchPointRobot extends HolonomicRobot {
 
     protected DcMotor leftLift, rightLift;
 
-    protected Servo leftGrip, rightGrip, jewelArm;
+    protected Servo leftGrip, rightGrip;
+    protected CRServo jewelArm;
     protected ColorSensor armColor;
 
     private double leftMax = 500, rightMax = 500;
@@ -64,7 +66,7 @@ public class PinchPointRobot extends HolonomicRobot {
         leftGrip = map.get(Servo.class, "LeftLift");
         rightGrip = map.get(Servo.class, "RightLift");
 
-        jewelArm = map.get(Servo.class, "jewelArm");
+        jewelArm = map.get(CRServo.class, "jewelArm");
 
         leftLift.setDirection(DcMotor.Direction.FORWARD);
         rightLift.setDirection(DcMotor.Direction.REVERSE);
@@ -95,11 +97,11 @@ public class PinchPointRobot extends HolonomicRobot {
 
     public void liftJewelArm()
     {
-        jewelArm.setPosition(0);
+        jewelArm.setPower(1);
     }
     public void dropJewelArm()
     {
-        jewelArm.setPosition(0.9);
+        jewelArm.setPower(-1);
     }
 
 

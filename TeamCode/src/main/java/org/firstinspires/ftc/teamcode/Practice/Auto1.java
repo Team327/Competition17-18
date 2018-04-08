@@ -23,9 +23,9 @@ public class Auto1 {
 
     public Auto1(ConveyorBot rob)
     {
-        AllIsRed = true;
+        AllIsRed = false;
         robot = rob;
-        currState = STATE.START;
+        currState = STATE.DOWNARM;
 
     }
 
@@ -54,7 +54,7 @@ public class Auto1 {
 
             case DETECTCOLOR:
                 robot.drive(0,0,0);
-
+                robot.stopJewelArm();
                 if(robot.jewelIsRed() == AllIsRed) currState = STATE.TURNRIGHT1;
                 else                               currState = STATE.TURNLEFT1;
                 break;
@@ -78,10 +78,11 @@ public class Auto1 {
             case TURNLEFT2:
                 robot.liftJewelArm();
                 robot.drive(0,0,0.3);
-                if (elapsed > 3500) currState = STATE.END;
+                if (elapsed > 4500) currState = STATE.END;
                 break;
 
             case END:
+                robot.stopJewelArm();
                 robot.drive(0,0,0);
                 break;
 
